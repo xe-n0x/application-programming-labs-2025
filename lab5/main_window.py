@@ -9,6 +9,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.iterator = None
+        self.current_path = None
         self.ui()
         self.next_button.setEnabled(False)
         self.folder_button.clicked.connect(self.select_folder)
@@ -115,6 +116,7 @@ class MainWindow(QtWidgets.QMainWindow):
          if not os.path.isfile(next_path):
               QtWidgets.QMessageBox.warning(self, "Файл не найден", f"Файл не существует:\n{next_path}")
               return
+         self.current_path = next_path
          pixmap = QPixmap(next_path)
          if pixmap.isNull():
               QtWidgets.QMessageBox.warning(self, "Ошибка формата", f"Файл не изображение:\n{next_path}")
@@ -126,8 +128,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def resizeEvent(self, event: QtGui.QResizeEvent) -> None:
          '''Изменение изображения при изменении размера'''
          super().resizeEvent(event)
-         if self.iterator is not None:
-              pixmap = self.image_lable.pixmap()
+         if self.current_path:
+              pixmap = QPixmap(self.current_path)
               if pixmap and not pixmap.isNull():
                 self.image_lable.setPixmap(
                     pixmap.scaled(self.image_lable.size(),
